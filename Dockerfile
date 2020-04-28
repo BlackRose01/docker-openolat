@@ -13,7 +13,7 @@ ENV DB_PASS dbpass
 
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt install -y openjdk-10-jre openjdk-10-jre-headless unzip
+RUN apt install -y default-jre default-jre-headless unzip
 
 RUN adduser --disabled-login --disabled-password --no-create-home openolat
 
