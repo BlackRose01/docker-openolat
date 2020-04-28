@@ -1,2 +1,11 @@
 # docker-openolat
 Create a Dockerimage for OpenOlat
+
+ENV OPENOLAT_VERSION 1428
+ENV TOMCAT_VERSION 9.0.43
+ENV INSTALL_DIR /opt/openolat
+ENV DB_HOST 127.0.0.1
+ENV DB_PORT 3306
+ENV DB_NAME db
+ENV DB_USER dbuser
+ENV DB_PASSWORD dbpass
