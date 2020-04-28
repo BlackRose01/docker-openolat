@@ -8,5 +8,5 @@
      validationQueryTimeout="-1"
      testOnBorrow="true"
      testOnReturn="false"
-     url="jdbc:mysql://_DB_HOST_:_DB_PORT_/_DB_NAME_?useUnicode=true&amp;characterEncoding=UTF-8&amp;cachePrepStmts=true&amp;cacheCallableStmts=true&amp;autoReconnectForPools$
+     url="jdbc:mysql://_DB_HOST_:_DB_PORT_/_DB_NAME_?useUnicode=true&amp;characterEncoding=UTF-8&amp;cachePrepStmts=true&amp;cacheCallableStmts=true&amp;autoReconnectForPools=true"/>
 </Context>
