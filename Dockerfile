@@ -9,7 +9,7 @@ ENV DB_HOST 127.0.0.1
 ENV DB_PORT 3306
 ENV DB_NAME db
 ENV DB_USER dbuser
-ENV DB_PASSWORD dbpass
+ENV DB_PASS dbpass
 
 RUN apt-get update
 RUN apt-get dist-upgrade -y
