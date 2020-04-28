@@ -1,0 +1,23 @@
+[Unit]
+Description=OpenOlat Startup Service
+After=network.target
+
+[Service]
+Type=oneshot
+
+User=openolat
+Group=openolat
+
+WorkingDirectory=/opt/openolat
+
+Environment=JRE_HOME=JAVA_HOME=/usr/lib/jvm/java-1.10.0-openjdk-armhf
+Environment=CATALINA_BASE=/opt/openolat
+Environment=CATALINA_HOME=/opt/openolat/tomcat9
+
+ExecStart=/bin/sh start
+ExecStop=/bin/sh stop
+
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
