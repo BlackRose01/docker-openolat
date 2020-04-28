@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Context path="" docBase="_INSTALL_DIR_/webapp" debug="0" reloadable="false" allowLinking="true">
+  <Resource name="jdbc/OpenOLATDS" auth="Container" type="javax.sql.DataSource"
+     maxTotal="16" maxIdle="4" maxWaitMillis="60000"
+     username="_DB_USER_" password="_DB_PASS_"
+     driverClassName="oracle.jdbc.OracleDriver"
+     validationQuery="SELECT 1" 
+     validationQueryTimeout="-1" 
+     testOnBorrow="true" 
+     testOnReturn="false"
+     url="jdbc:postgresql://_DB_HOST_:DB_PORT_/_DB_NAME_"/>
+</Context>
