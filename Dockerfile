@@ -24,6 +24,7 @@ ADD database/mysql.xml /tmp/mysql.xml
 ADD database/postgresql.xml /tmp/postgresql.xml
 ADD database/oracle.xml /tmp/oracle.xml
 ADD database/sqlite.xml /tmp/sqlite.xml
+ADD openolat.service /tmp/openolat.service
 
 EXPOSE 8088/tcp
 
