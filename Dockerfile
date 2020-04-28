@@ -15,7 +15,7 @@ RUN apt-get update
 RUN apt-get dist-upgrade -y
 RUN apt install -y default-jre default-jre-headless unzip
 
-RUN adduser --disabled-login --disabled-password --no-create-home openolat
+RUN useradd --no-create-home -s /bin/false openolat
 
 RUN mkdir -p /opt/openolat
 RUN mkdir /opt/openolat/bin /opt/openolat/conf /opt/openolat/lib /opt/openolat/logs /opt/openolat/olatdata /opt/openolat/run
