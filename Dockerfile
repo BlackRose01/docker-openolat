@@ -12,12 +12,17 @@ ENV DB_PASSWORD dbpass
 
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt install -y openjdk-10-jre openjdk-10-jre-headless
+RUN apt install -y openjdk-10-jre openjdk-10-jre-headless unzip
 
 RUN adduser --disabled-login --disabled-password --no-create-home openolat
 
 RUN mkdir -p /opt/openolat
 RUN mkdir /opt/openolat/bin /opt/openolat/conf /opt/openolat/lib /opt/openolat/logs /opt/openolat/olatdata /opt/openolat/run
+
+ADD database/mysql.xml /tmp/mysql.xml
+ADD database/postgresql.xml /tmp/postgresql.xml
+ADD database/oracle.xml /tmp/oracle.xml
+ADD database/sqlite.xml /tmp/sqlite.xml
 
 EXPOSE 8088/tcp
 
