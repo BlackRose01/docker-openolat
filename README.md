@@ -1,5 +1,5 @@
 # docker-openolat
-Create a Dockerimage for OpenOlat
+Creates a Container for OpenOlat
 
 ## Environmental Variables
 | **Variable** | **Meaning** | **Default Value** |
