@@ -13,7 +13,7 @@ ENV DB_PASS dbpass
 
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt install -y default-jre default-jre-headless unzip curl
+RUN apt install -y default-jre default-jre-headless unzip curl wget
 
 RUN useradd --no-create-home -s /bin/false openolat
 
