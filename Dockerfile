@@ -27,6 +27,7 @@ ADD database/sqlite.xml /tmp/sqlite.xml
 ADD openolat.service /tmp/openolat.service
 ADD server.xml /tmp/server.xml
 ADD olat.local.properties /tmp/olat.local.properties
+ADD entrypoint.sh /entrypoint.sh
 
 EXPOSE 8088/tcp
 
