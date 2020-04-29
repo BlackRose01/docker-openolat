@@ -105,14 +105,16 @@ echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
 echo "Set user permissions for user openolat to $INSTALL_DIR"
 chown openolat:openolat "$INSTALL_DIR"
 
-echo "Create and activate OpenOlat Service"
-mv "/tmp/openolat.service" "/etc/systemd/system/openolat.service"
+#echo "Create and activate OpenOlat Service"
+#mv "/tmp/openolat.service" "/etc/systemd/system/openolat.service"
 
 echo "Clean up"
-rm -r "/tmp/*.xml"
+rm -r /tmp/*.xml
 
-systemctl enable openolat.service
-systemctl daemon-reload
-systemctl start openolat.service
+#systemctl enable openolat.service
+#systemctl daemon-reload
+#systemctl start openolat.service
+
+/bin/sh $INSTALL_DIR/start
 
 exit 0
