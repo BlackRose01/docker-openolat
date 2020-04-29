@@ -11,9 +11,9 @@ DB_TYPE=$([[ ! -z $DB_HOST ]] && echo $DB_TYPE || echo "sqlite")
 JAVA_DIR=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
 
 echo "Create necessary folders for OpenOlat in: $INSTALL_DIR"
-sudo mkdir -p "$INSTALL_DIR"
-sudo mkdir "$INSTALL_DIR/bin" "$INSTALL_DIR/conf" "$INSTALL_DIR/lib" "$INSTALL_DIR/logs" "$INSTALL_DIR/olatdata" "$INSTALL_DIR/run"
-sudo mkdir -p "$INSTALL_DIR/conf/Catalina/localhost"
+mkdir -p "$INSTALL_DIR"
+mkdir "$INSTALL_DIR/bin" "$INSTALL_DIR/conf" "$INSTALL_DIR/lib" "$INSTALL_DIR/logs" "$INSTALL_DIR/olatdata" "$INSTALL_DIR/run"
+mkdir -p "$INSTALL_DIR/conf/Catalina/localhost"
 
 echo "Download OpenOlat Version: $OPENOLAT_VERSION"
 if [[ $OPENOLAT_VERSION -eq "latest" ]]; then
@@ -44,75 +44,75 @@ else
 fi
 
 echo "Unpack downloaded files to installation directory"
-sudo tar xf "/tmp/tomcat.tar.gz" -C "$INSTALL_DIR"
-sudo mv "$INSTALL_DIR/apache-tomcat-*" -t "$INSTALL_DIR/tomcat"
+tar xf "/tmp/tomcat.tar.gz" -C "$INSTALL_DIR"
+mv "$INSTALL_DIR/apache-tomcat-*" -t "$INSTALL_DIR/tomcat"
 
-sudo unzip -f -qq "/tmp/openolat.war" -d "$INSTALL_DIR/webapp"
+unzip -f -qq "/tmp/openolat.war" -d "$INSTALL_DIR/webapp"
 
 echo "Create necessary Symlinks/Move files"
-sudo ln -s "$INSTALL_DIR/tomcat/bin/startup.sh" "$INSTALL_DIR/start"
-sudo ln -s "$INSTALL_DIR/tomcat/bin/shutdown.sh" "$INSTALL_DIR/stop"
-sudo ln -s "$INSTALL_DIR/tomcat/bin/catalina.sh" "$INSTALL_DIR/bin/catalina.sh"
-sudo ln -s "$INSTALL_DIR/tomcat/bin/catalina.sh" "$INSTALL_DIR/conf/catalina.sh"
-sudo ln -s "$INSTALL_DIR/tomcat/conf/web.xml" "$INSTALL_DIR/conf/web.xml"
+ln -s "$INSTALL_DIR/tomcat/bin/startup.sh" "$INSTALL_DIR/start"
+ln -s "$INSTALL_DIR/tomcat/bin/shutdown.sh" "$INSTALL_DIR/stop"
+ln -s "$INSTALL_DIR/tomcat/bin/catalina.sh" "$INSTALL_DIR/bin/catalina.sh"
+ln -s "$INSTALL_DIR/tomcat/bin/catalina.sh" "$INSTALL_DIR/conf/catalina.sh"
+ln -s "$INSTALL_DIR/tomcat/conf/web.xml" "$INSTALL_DIR/conf/web.xml"
 
-sudo mv "/tmp/server.xml" "$INSTALL_DIR/conf/server.xml"
-sudo mv "/tmp/olat.local.properties" "$INSTALL_DIR/lib/olat.local.properties"
+mv "/tmp/server.xml" "$INSTALL_DIR/conf/server.xml"
+mv "/tmp/olat.local.properties" "$INSTALL_DIR/lib/olat.local.properties"
 
 echo "Create database configuration for OpenOlat"
 case $DB_TYPE in
 	"oracle")
 		DB_PORT=$([[ ! -z $DB_PORT ]] && echo $DB_PORT || echo "1521")
 		
-		sudo mv "/tmp/oracle.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+		mv "/tmp/oracle.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
 		;;
 	"mysql")
 		DB_PORT=$([[ ! -z $DB_PORT ]] && echo $DB_PORT || echo "3306")
 		
-		sudo mv "/tmp/mysql.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+		mv "/tmp/mysql.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
 		;;
 	"postgresql")
 		DB_PORT=$([[ ! -z $DB_PORT ]] && echo $DB_PORT || echo "5432")
 		
-		sudo mv "/tmp/postgresql.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+		mv "/tmp/postgresql.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
 		;;
 	*)
-		sudo mv "/tmp/sqlite.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+		mv "/tmp/sqlite.xml" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
 		;;
 esac
 
-sudo sed "s/_INSTALL_DIR_/$INSTALL_DIR/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
-sudo sed "s/_DB_HOST_/$DB_HOST/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
-sudo sed "s/_DB_PORT_/$DB_PORT/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
-sudo sed "s/_DB_NAME_/$DB_NAME/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
-sudo sed "s/_DB_USER_/$DB_USER/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
-sudo sed "s/_DB_PASS_/$DB_PASS/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_INSTALL_DIR_/$INSTALL_DIR/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_DB_HOST_/$DB_HOST/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_DB_PORT_/$DB_PORT/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_DB_NAME_/$DB_NAME/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_DB_USER_/$DB_USER/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
+sed "s/_DB_PASS_/$DB_PASS/g" "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml" > "$INSTALL_DIR/conf/Catalina/localhost/openolat.xml"
 
 echo "Update OpenOlat configuration file"
-sudo sed "s/_INSTALL_DIR_/$INSTALL_DIR/g" "$INSTALL_DIR/lib/olat.local.properties" > "$INSTALL_DIR/lib/olat.local.properties"
+sed "s/_INSTALL_DIR_/$INSTALL_DIR/g" "$INSTALL_DIR/lib/olat.local.properties" > "$INSTALL_DIR/lib/olat.local.properties"
 
 echo "Create environment file"
-sudo touch "$INSTALL_DIR/bin/setenv.sh"
+touch "$INSTALL_DIR/bin/setenv.sh"
 
-sudo echo "CATALINA_HOME=$INSTALL_DIR/tomcat" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo "CATALINA_BASE=$INSTALL_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo "CATALINA_PID=$INSTALL_DIR/run/openolat.pid" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo "CATALINA_TMPDIR=$JAVA_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo "JRE_HOME=/tmp/openolat" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo "" >> "$INSTALL_DIR/bin/setenv.sh"
-sudo echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
+echo "CATALINA_HOME=$INSTALL_DIR/tomcat" >> "$INSTALL_DIR/bin/setenv.sh"
+echo "CATALINA_BASE=$INSTALL_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
+echo "CATALINA_PID=$INSTALL_DIR/run/openolat.pid" >> "$INSTALL_DIR/bin/setenv.sh"
+echo "CATALINA_TMPDIR=$JAVA_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
+echo "JRE_HOME=/tmp/openolat" >> "$INSTALL_DIR/bin/setenv.sh"
+echo "" >> "$INSTALL_DIR/bin/setenv.sh"
+echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
 
 echo "Set user permissions for user openolat to $INSTALL_DIR"
-sudo chown openolat:openolat "$INSTALL_DIR"
+chown openolat:openolat "$INSTALL_DIR"
 
 echo "Create and activate OpenOlat Service"
-sudo mv "/tmp/openolat.service" "/etc/systemd/system/openolat.service"
+mv "/tmp/openolat.service" "/etc/systemd/system/openolat.service"
 
 echo "Clean up"
 rm -r "/tmp/*.xml"
 
-sudo systemctl enable openolat.service
-sudo systemctl daemon-reload
-sudo systemctl start openolat.service
+systemctl enable openolat.service
+systemctl daemon-reload
+systemctl start openolat.service
 
 exit 0
