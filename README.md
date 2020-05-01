@@ -1,18 +1,30 @@
 # docker-openolat
 Creates a Container for OpenOlat
 
+## Prerequisite
+If you want to run your OpenOlat with a remote database (MySQL/MariaDB, Oracle, PostgreSQL) then you have to create the database with tables and keys first. The 
+necessary SQL-file can you find here:
+- $INSTALL_DIR/webapp/WEB-INF/classes/database/$DB_TYPE/setupDatasbe.sql
+
+You can also find the file in the OpenOlat WAR-file when you unzip it.
+
 ## Environmental Variables
-| **Variable** | **Meaning** | **Default Value** |
-|---|---|---|
-| OPENOLAT_VERSION | Version of OpenOlat which will be downloaded | latest |
-| TOMCAT_VERSION | Version of Tomcat Server which will be downloaded | latest |
-| INSTALL_DIR | Directory of Server installation | /opt/openolat |
-| DB_TYPE | Database type (sqlite, mysql, postgresql, oracle) | sqlite |
-| DB_HOST | Database Server IP/Name (ignored by SQLite) | 127.0.0.1 |
-| DB_PORT | Database Server IP/Name (ignored by SQLite) | 3306 |
-| DB_NAME | Database Server IP/Name (ignored by SQLite) | db |
-| DB_USER | Database Server IP/Name (ignored by SQLite) | dbuser |
-| DB_PASS | Database Server IP/Name (ignored by SQLite) | dbpass |
+| **Variable** | **Meaning** | **Possible Values** | **Default Value** |
+|---|---|---|---|
+| DOMAINNAME | Defines the name of used domain | IP or Hostname | localhost |
+| OPENOLAT_VERSION | Version of OpenOlat which will be downloaded | * | latest |
+| OPENOLAT_UPDATE | Defines if OpenOlat should update | true, false | false |
+| TOMCAT_VERSION | Version of Tomcat Server which will be downloaded | * |  latest |
+| TOMCAT_UPDATE | Defines if Tomcat should update | true, false | false |
+| INSTALL_DIR | Directory of Server installation | Path in Filesystem | /opt/openolat |
+| DB_TYPE | Database type (sqlite, mysql, postgresql, oracle) | sqlite, mysql, postgresql, oracle | sqlite |
+| DB_HOST | Database Server IP/Name (ignored by SQLite) | 0.0.0.0 - 255.255.255.255 or Hostname | 127.0.0.1 |
+| DB_PORT | Database Server IP/Name (ignored by SQLite) | * | 3306 |
+| DB_NAME | Database Server IP/Name (ignored by SQLite) | * | db |
+| DB_USER | Database Server IP/Name (ignored by SQLite) | * | dbuser |
+| DB_PASS | Database Server IP/Name (ignored by SQLite) | * | dbpass |
+
+* means everything
 
 ## Ports
 This image only needs Port 8088 TCP for HTTP.
@@ -21,3 +33,16 @@ This image only needs Port 8088 TCP for HTTP.
 The following files are relevant to control OpenOlat.
 - $INSTALL_DIR/lib/olat.local.properties
 - $INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties
+
+## Volumes
+The datadictionary of OpenOlat you can find in $INSTALL_DIR/olatdata
+
+## How to update/downgrade OpenOlat or Tomcat
+1) Enter new Version of OpenOlat or Tomcat into environment variable
+2) set environment variable OPENOLAT_UPDATE and/or TOMCAT_UPDATE to value true
+3) restart docker container
+
+## Sources
+https://www.openolat.com/fileadmin/adminwiki/_START_.html
+https://docs.docker.com/engine/reference/builder/
+https://github.com/OpenOLAT/OpenOLAT
