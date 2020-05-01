@@ -43,6 +43,6 @@ The datadictionary of OpenOlat you can find in $INSTALL_DIR/olatdata
 3) restart docker container
 
 ## Sources
-[OpenOlat Adminwiki](https://www.openolat.com/fileadmin/adminwiki/_START_.html)
-[Docker References Dockerfile](https://docs.docker.com/engine/reference/builder/)
+[OpenOlat Adminwiki](https://www.openolat.com/fileadmin/adminwiki/_START_.html) \
+[Docker References Dockerfile](https://docs.docker.com/engine/reference/builder/) \
 [GitHub Repository OpenOlat](https://github.com/OpenOLAT/OpenOLAT)
