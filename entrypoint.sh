@@ -11,8 +11,53 @@ DB_TYPE=$([[ ! -z $DB_TYPE ]] && echo $(echo $DB_TYPE | tr '[:upper:]' '[:lower:
 DB_TYPE=$([[ ! -z $DB_HOST ]] && echo $DB_TYPE || echo "sqlite")
 JAVA_DIR=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
 
+download_openolat() {
+	OPENOLAT_URL=$1
+	OPENOLAT_VERSION=$2
+
+	if [[ $OPENOLAT_VERSION -eq "latest" ]]; then
+		OPENOLAT_VERSION=$(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]{4,}.war" | uniq | sort -r | head -n 1 | grep -Eoi "[0-9]+")
+		
+		echo "Latest OpenOlat Version: $OPENOLAT_VERSION"
+	fi
+
+	if [[ $(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
+		echo "OpenOlat Version does not exists. Please change your required Version."
+		return 1
+	else
+		wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O "/tmp/openolat.war" --unlink -q
+	fi
+	
+	return 0
+}
+
+download_tomcat() {
+	TOMCAT_URL=$1
+	TOMCAT_VERSION=$2
+	TOMCAT_VERSION_MAJOR=$3
+
+	if [[ $TOMCAT_VERSION = "latest" ]]; then
+		TOMCAT_VERSION_MAJOR=$(curl -s https://downloads.apache.org/tomcat/ | grep -Eoi "tomcat-[0-9]+" | uniq | cut -d'-' -f2 | sort -r -n | head -n 1)
+		TOMCAT_VERSION=$(curl -s https://downloads.apache.org/tomcat/tomcat-10/ | grep -Poi "(?<=href=\")v10.*(?=/\")" | sort -r | head -n 1)
+		
+		echo "Latest Tomcat Version: $TOMCAT_VERSION"
+	fi
+
+	if [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/" -I | head -n 1 | grep -Eoi "[0-9]{3}") != 200 ]]; then
+		echo "Cannot find major release from Tomcat Version: $TOMCAT_VERSION_MAJOR. So your passed TOMCAT_VERSION $TOMCAT_VERSION is wrong."
+		return 1
+	elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/" | grep -Eoi "apache-tomcat-$TOMCAT_VERSION.tar.gz" | uniq | wc -l) == 0 ]]; then
+		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passes TOMCAT_VERSION is wrong."
+		return 1
+	else
+		wget "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" -O "/tmp/tomcat.tar.gz" --unlink -q
+	fi
+	
+	return 0
+}
+
 if [[ -z $OPENOLAT_UPDATE ]] && [[ $OPENOLAT_UPDATE -eq "true" ]]; then
-	echo "Oh... That's currently not implemented"
+	download_openolat $OPENOLAT_URL $OPENOLAT_VERSION
 fi
 
 if [[ -z $TOMCAT_UPDATE ]] && [[ $TOMCAT_UPDATE -eq "true" ]]; then
@@ -21,6 +66,11 @@ fi
 
 if [[ -e "$INSTALL_DIR/installed" ]] && [[ $(cat "$INSTALL_DIR/installed" | cut -d';' -f1) -eq "true" ]]; then
 	echo "Everything is already installed. Startup now!"
+	
+	export JAVA_HOME=$JAVA_DIR
+	export JRE_HOME=$JAVA_DIR
+	export CATALINA_BASE=$INSTALL_DIR
+	export CATALINA_HOME=$INSTALL_DIR/tomcat
 
 	/bin/sh /start run >> "$INSTALL_DIR/logs/stdout.log"
 	exit 0
@@ -32,29 +82,17 @@ mkdir "$INSTALL_DIR/bin" "$INSTALL_DIR/conf" "$INSTALL_DIR/lib" "$INSTALL_DIR/lo
 mkdir -p "$INSTALL_DIR/conf/Catalina/$DOMAINNAME"
 
 echo "Download OpenOlat Version: $OPENOLAT_VERSION"
-if [[ $OPENOLAT_VERSION -eq "latest" ]]; then
-	OPENOLAT_VERSION=$(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]{4,}.war" | uniq | sort -r | head -n 1 | grep -Eoi "[0-9]+")
-	
-	echo "Download OpenOlat version: $OPENOLAT_VERSION"
-	wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O /tmp/openolat.war --unlink -q
-elif [[ $(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
-	echo "OpenOlat Version does not exists. Please change your required Version."
+download_openolat $OPENOLAT_URL $OPENOLAT_VERSION
+
+if [[ $? == 1 ]]; then
 	exit 1
-else
-	wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O "/tmp/openolat.war" --unlink -q
 fi
 
 echo "Download Tomcat Version: $TOMCAT_VERSION"
-if [[ $TOMCAT_VERSION = "latest" ]]; then
-	echo "Later..."
-elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/" -I | head -n 1 | grep -Eoi "[0-9]{3}") != 200 ]]; then
-	echo "Cannot find major release from Tomcat Version: $TOMCAT_VERSION_MAJOR. So your passed TOMCAT_VERSION $TOMCAT_VERSION is wrong."
+download_tomcat $TOMCAT_URL $TOMCAT_VERSION $TOMCAT_VERSION_MAJOR
+
+if [[ $? == 1 ]]; then
 	exit 1
-elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/" | grep -Eoi "apache-tomcat-$TOMCAT_VERSION.tar.gz" | uniq | wc -l) == 0 ]]; then
-	echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passes TOMCAT_VERSION is wrong."
-	exit 1
-else
-	wget "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" -O "/tmp/tomcat.tar.gz" --unlink -q
 fi
 
 echo "Unpack downloaded files to installation directory (this can be take some time)"
@@ -123,17 +161,11 @@ echo "JRE_HOME=$JAVA_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "" >> "$INSTALL_DIR/bin/setenv.sh"
 echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
 
-#echo "Set global environment variables"
+echo "Set global environment variables"
 export JAVA_HOME=$JAVA_DIR
 export JRE_HOME=$JAVA_DIR
 export CATALINA_BASE=$INSTALL_DIR
 export CATALINA_HOME=$INSTALL_DIR/tomcat
-#echo "JAVA_HOME=$JAVA_DIR" >> "/etc/environment"
-#echo "JRE_HOME=$JAVA_DIR" >> "/etc/environment"
-#echo "CATALINA_BASE=$INSTALL_DIR" >> "/etc/environment"
-#echo "CATALINA_HOME=$INSTALL_DIR/tomcat" >> "/etc/environment"
-
-#. "/etc/environment"
 
 echo "Clean up"
 rm -r /tmp/*.xml
@@ -145,3 +177,5 @@ echo "Start OpenOlat"
 echo "true;$OPENOLAT_VERSION;TOMCAT_VERSION" > $INSTALL_DIR/installed
 
 /bin/sh /start run >> "$INSTALL_DIR/logs/stdout.log"
+
+exit 0

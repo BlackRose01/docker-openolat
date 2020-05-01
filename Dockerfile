@@ -15,11 +15,6 @@ ENV DB_NAME test-oo
 ENV DB_USER test-oo
 ENV DB_PASS test-oo
 
-#ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
-#ENV CATALINA_HOME /opt/openolat/tomcat
-#ENV CATALINA_BASE /opt/openolat
-#ENV JRE_HOME /usr/lib/jvm/java-11-openjdk-amd64
-
 COPY database/mysql.xml /tmp/mysql.xml
 COPY database/postgresql.xml /tmp/postgresql.xml
 COPY database/oracle.xml /tmp/oracle.xml
@@ -33,15 +28,7 @@ RUN apt-get update
 RUN apt-get dist-upgrade -y
 RUN apt install -y default-jre default-jre-headless unzip curl wget
 
-#RUN export JAVA_HOME=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
-#RUN export JRE_HOME=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
-#RUN export CATALINA_HOME=$INSTALL_DIR/tomcat
-#RUN export CATALINA_BASE=$INSTALL_DIR
-
 EXPOSE 8088/tcp
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["-c", "/entrypoint.sh"]
-
-#ENTRYPOINT ["/bin/bash"]
-#CMD ["/entrypoint.sh"]
