@@ -11,21 +11,26 @@ INSTALL_DIR=$([[ ! -z $INSTALL_DIR ]] && echo $INSTALL_DIR || echo "/opt/openola
 DB_TYPE=$([[ ! -z $DB_TYPE ]] && echo $(echo $DB_TYPE | tr '[:upper:]' '[:lower:]') || echo "sqlite")
 DB_TYPE=$([[ ! -z $DB_HOST ]] && echo $DB_TYPE || echo "sqlite")
 JAVA_DIR=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
+SMTP_HOST=$([[ ! -z $SMTP_HOST ]] && echo $SMTP_HOST || echo "localhost")
+SMTP_USER=$([[ ! -z $SMTP_USER ]] && echo $SMTP_USER || echo "user")
+SMTP_PASS=$([[ ! -z $SMTP_PASS ]] && echo $SMTP_PASS || echo "password")
+SMTP_FROM=$([[ ! -z $SMTP_FROM ]] && echo $SMTP_FROM || echo "no-reply@your.domain")
+SMTP_ADMIN=$([[ ! -z $SMTP_ADMIN ]] && echo $SMTP_ADMIN || echo "admin@your.domain")
 
 # Download OpenOlat after check if exists
 download_openolat() {
-	OPENOLAT_URL=$1
+	OPENOLAT_URL="$1"
 	OPENOLAT_VERSION=$2
 
 	# if OPENOLAT_VERSION is latest then set variable to latest version number
 	if [[ $OPENOLAT_VERSION -eq "latest" ]]; then
-		OPENOLAT_VERSION=$(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]{4,}.war" | uniq | sort -r | head -n 1 | grep -Eoi "[0-9]+")
+		OPENOLAT_VERSION=$(curl -s "$OPENOLAT_URL" | grep -Eoi "openolat_[0-9]{4,}.war" | uniq | sort -r | head -n 1 | grep -Eoi "[0-9]+")
 		
 		echo "Latest OpenOlat Version: $OPENOLAT_VERSION"
 	fi
 
 	# check if version exists and download it into /tmp folder
-	if [[ $(curl -s $OPENOLAT_URL | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
+	if [[ $(curl -s "$OPENOLAT_URL" | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
 		echo "OpenOlat Version does not exists. Please change your required Version."
 		return 1
 	else
@@ -37,12 +42,12 @@ download_openolat() {
 
 # Download Tomcat after check if exists
 download_tomcat() {
-	TOMCAT_URL=$1
+	TOMCAT_URL="$1"
 	TOMCAT_VERSION=$2
 	TOMCAT_VERSION_MAJOR=$3
 
 	# if TOMCAT_VERSION is latest then set variables TOMCAT_VERSION/TOMCAT_VERSION_MAJOR to latest version number
-	if [[ $TOMCAT_VERSION = "latest" ]]; then
+	if [[ "$TOMCAT_VERSION" = "latest" ]]; then
 		TOMCAT_VERSION_MAJOR=$(curl -s "$TOMCAT_URL" | grep -Eoi "tomcat-[0-9]+" | uniq | cut -d'-' -f2 | sort -r -n | head -n 1)
 		TOMCAT_VERSION=$(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/" | grep -Poi "(?<=href=\")v10.*(?=/\")" | sort -r | head -n 1)
 		
@@ -69,34 +74,35 @@ get_configuration_information() {
 
 	while read -r name value
 	do
-		if [[ $name -eq $2 ]]; then
-			return ${value//\"/}"
+		if [[ "$name" -eq "$2" ]]; then
+			echo ${value//\"/}\"
+			return 0
 		fi
-	done < $1
+	done < "$1"
 
 	return 1
 }
 
 # if OpenOlat was already installed
-if [[ -e "$INSTALL_DIR/install_information" ]] && [[ $(get_configuration_information "$INSTALL_DIR/install_information" "INSTALLED") -eq "true" ]]; then
+if [[ -e "$INSTALL_DIR/install_information" ]] && [[ $(get_configuration_information "$INSTALL_DIR/install_information" "INSTALLED") == "true" ]]; then
 	# check if OpenOlat has to be update
-	if [[ -z $OPENOLAT_UPDATE ]] && [[ $OPENOLAT_UPDATE -eq "true" ]]; then
+	if [[ -z $OPENOLAT_UPDATE ]] && [[ $OPENOLAT_UPDATE == "true" ]]; then
 		echo "Perform update/downgrade OpenOlat to version $OPENOLAT_VERSION"
 
-		download_openolat $OPENOLAT_URL $OPENOLAT_VERSION
+		download_openolat "$OPENOLAT_URL" "$OPENOLAT_VERSION"
 
 		# move OpenOlat configuration file; delete old data; unzip downloaded file to INSTALL_DIR; mv OpenOlat configuration file back
-		mv $INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties $INSTALL_DIR/olat.properties
-		rm -r $INSTALL_DIR/webapp
+		mv "$INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties" "$INSTALL_DIR/olat.properties"
+		rm -r "$INSTALL_DIR/webapp"
 		unzip -qq "/tmp/openolat.war" -d "$INSTALL_DIR"/webapp
-		mv $INSTALL_DIR/olat.properties $INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties
+		mv "$INSTALL_DIR/olat.properties" "$INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties"
 	fi
 
 	# check if Tomcat has to be update
-	if [[ -z $TOMCAT_UPDATE ]] && [[ $TOMCAT_UPDATE -eq "true" ]]; then
+	if [[ -z $TOMCAT_UPDATE ]] && [[ $TOMCAT_UPDATE == "true" ]]; then
 		echo "Perform update/downgrade Tomcat to version $TOMCAT_VERSION"
 		
-		download_tomcat $TOMCAT_URL $TOMCAT_VERSION $TOMCAT_VERSION_MAJOR
+		download_tomcat "$TOMCAT_URL" "$TOMCAT_VERSION" "$TOMCAT_VERSION_MAJOR"
 		
 		# delete old tomcat version; unpack downloaded file; mv unpacked folder to INSTALL_DIR
 		rm -r "$INSTALL_DIR/tomcat"
@@ -105,7 +111,7 @@ if [[ -e "$INSTALL_DIR/install_information" ]] && [[ $(get_configuration_informa
 	fi
 	
 	# Update Domainname in Files and create Domainfolder for Catalina
-	if [[ $DOMAINNAME -ne $(get_configuration_information "$INSTALL_DIR/install_information" "USED_DOMAINNAME") ]]; then
+	if [[ "$DOMAINNAME" -ne $(get_configuration_information "$INSTALL_DIR/install_information" "USED_DOMAINNAME") ]]; then
 		echo "Change Domainname from $USED_DOMAINNAME to $DOMAINNAME"
 		
 		mkdir -p "$INSTALL_DIR/conf/Catalina/$DOMAINNAME"
@@ -138,7 +144,7 @@ mkdir -p "$INSTALL_DIR/conf/Catalina/$DOMAINNAME"
 
 # download OpenOlat
 echo "Download OpenOlat Version: $OPENOLAT_VERSION"
-download_openolat $OPENOLAT_URL $OPENOLAT_VERSION
+download_openolat "$OPENOLAT_URL" "$OPENOLAT_VERSION"
 
 if [[ $? == 1 ]]; then
 	exit 1
@@ -146,7 +152,7 @@ fi
 
 # Download Tomcat
 echo "Download Tomcat Version: $TOMCAT_VERSION"
-download_tomcat $TOMCAT_URL $TOMCAT_VERSION $TOMCAT_VERSION_MAJOR
+download_tomcat "$TOMCAT_URL" "$TOMCAT_VERSION" "$TOMCAT_VERSION_MAJOR"
 
 if [[ $? == 1 ]]; then
 	exit 1
@@ -205,6 +211,15 @@ sed -i -s "s+_DB_PASS_+$DB_PASS+g" "$INSTALL_DIR/conf/Catalina/$DOMAINNAME/ROOT.
 echo "Update OpenOlat configuration file"
 sed -i -s "s+_INSTALL_DIR_+$INSTALL_DIR+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DOMAINNAME_+$DOMAINNAME+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_DB_TYPE_+$DB_TYPE+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_DB_NAME_+$DB_NAME+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_DB_USER+$DB_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_DB_PASS_+$DB_PASS+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_HOST_+$SMTP_HOST+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_USER_+$SMTP_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_PASS_+$SMTP_PASS+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_FROM_+$SMTP_FROM+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_ADMIN_+$SMTP_ADMIN+g" "$INSTALL_DIR/lib/olat.local.properties"
 
 sed -i -s "s+_INSTALL_DIR_+$INSTALL_DIR+g" "$INSTALL_DIR/lib/log4j2.xml"
 

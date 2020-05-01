@@ -23,6 +23,12 @@ You can also find the file in the OpenOlat WAR-file when you unzip it.
 | DB_NAME | Database Server IP/Name (ignored by SQLite) | * | db |
 | DB_USER | Database Server IP/Name (ignored by SQLite) | * | dbuser |
 | DB_PASS | Database Server IP/Name (ignored by SQLite) | * | dbpass |
+| SMTP_HOST | Host of your SMTP Server | IP or Hostname | localhost |
+| SMTP_USER | Username for SMTP | * | user |
+| SMTP_PASS | Password for SMTP User | * | password |
+| STMP_FROM | From Mail Adress | * | no-reply@your.domain |
+| SMTP_ADMIN | Admin Mail Adress | * | admin@your.domain
+
 
 * means everything
 
@@ -45,4 +51,5 @@ The datadictionary of OpenOlat you can find in $INSTALL_DIR/olatdata
 ## Sources
 [OpenOlat Adminwiki](https://www.openolat.com/fileadmin/adminwiki/_START_.html) \
 [Docker References Dockerfile](https://docs.docker.com/engine/reference/builder/) \
-[GitHub Repository OpenOlat](https://github.com/OpenOLAT/OpenOLAT)
+[GitHub Repository OpenOlat](https://github.com/OpenOLAT/OpenOLAT) \
+[Sample Configuration File](https://github.com/klemens/openolat/blob/master/olat.local.properties.sample)
