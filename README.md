@@ -23,12 +23,15 @@ You can also find the file in the OpenOlat WAR-file when you unzip it.
 | DB_NAME | Database Server IP/Name (ignored by SQLite) | * | db |
 | DB_USER | Database Server IP/Name (ignored by SQLite) | * | dbuser |
 | DB_PASS | Database Server IP/Name (ignored by SQLite) | * | dbpass |
-| SMTP_HOST | Host of your SMTP Server | IP or Hostname | localhost |
-| SMTP_USER | Username for SMTP | * | user |
-| SMTP_PASS | Password for SMTP User | * | password |
+| SMTP_HOST | Host of your SMTP Server | IP or Hostname | disabled |
+| SMTP_PORT | Port of your SMTP Server | * | 25 |
+| SMTP_USER | Username for SMTP | * | (empty) |
+| SMTP_PASS | Password for SMTP User | * | (empty) |
 | STMP_FROM | From Mail Adress | * | no-reply@your.domain |
-| SMTP_ADMIN | Admin Mail Adress | * | admin@your.domain
-
+| SMTP_ADMIN | Admin Mail Adress | * | admin@your.domain |
+| SMTP_SSL | Use SSL encryption | true, false | false |
+| SMTP_STARTTLS | Use Starttls encryption | true, false | false |
+| SMTP_CHECK_CERT | Check Server Certificate | true, false | false |
 
 * means everything
 
@@ -40,6 +43,8 @@ The following files are relevant to control OpenOlat.
 - $INSTALL_DIR/lib/olat.local.properties
 - $INSTALL_DIR/webapp/WEB-INF/classes/serviceconfig/olat.properties
 
+The file "olat.local.properties" overwrite properties from olat.properties.
+
 ## Volumes
 The datadictionary of OpenOlat you can find in $INSTALL_DIR/olatdata
 
@@ -48,8 +53,12 @@ The datadictionary of OpenOlat you can find in $INSTALL_DIR/olatdata
 2) set environment variable OPENOLAT_UPDATE and/or TOMCAT_UPDATE to value true
 3) restart docker container
 
+## Note
+* The CPU usage will be very high on start
+
 ## Sources
 [OpenOlat Adminwiki](https://www.openolat.com/fileadmin/adminwiki/_START_.html) \
 [Docker References Dockerfile](https://docs.docker.com/engine/reference/builder/) \
 [GitHub Repository OpenOlat](https://github.com/OpenOLAT/OpenOLAT) \
-[Sample Configuration File](https://github.com/klemens/openolat/blob/master/olat.local.properties.sample)
+[Sample Configuration File](https://github.com/klemens/openolat/blob/master/olat.local.properties.sample) \
+[Sample Mail Configuration](https://www.linuxforen.de/forums/showthread.php?280359-openOLAT-auf-tomcat-verschickt-keine-Mails&styleid=4)

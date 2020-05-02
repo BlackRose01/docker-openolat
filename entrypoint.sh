@@ -11,11 +11,15 @@ INSTALL_DIR=$([[ ! -z $INSTALL_DIR ]] && echo $INSTALL_DIR || echo "/opt/openola
 DB_TYPE=$([[ ! -z $DB_TYPE ]] && echo $(echo $DB_TYPE | tr '[:upper:]' '[:lower:]') || echo "sqlite")
 DB_TYPE=$([[ ! -z $DB_HOST ]] && echo $DB_TYPE || echo "sqlite")
 JAVA_DIR=$(find /usr/lib/jvm/ -maxdepth 1 -iname java-* -type d | head -n 1)
-SMTP_HOST=$([[ ! -z $SMTP_HOST ]] && echo $SMTP_HOST || echo "localhost")
-SMTP_USER=$([[ ! -z $SMTP_USER ]] && echo $SMTP_USER || echo "user")
-SMTP_PASS=$([[ ! -z $SMTP_PASS ]] && echo $SMTP_PASS || echo "password")
+SMTP_HOST=$([[ ! -z $SMTP_HOST ]] && echo $SMTP_HOST || echo "disabled")
+SMTP_PORT=$([[ ! -z $SMTP_PORT ]] && echo $SMTP_PORT || echo "25")
+SMTP_USER=$([[ ! -z $SMTP_USER ]] && echo $SMTP_USER || echo "")
+SMTP_PASS=$([[ ! -z $SMTP_PASS ]] && echo $SMTP_PASS || echo "")
 SMTP_FROM=$([[ ! -z $SMTP_FROM ]] && echo $SMTP_FROM || echo "no-reply@your.domain")
 SMTP_ADMIN=$([[ ! -z $SMTP_ADMIN ]] && echo $SMTP_ADMIN || echo "admin@your.domain")
+SMTP_SSL=$([[ ! -z $SMTP_SSL ]] && echo $SMTP_SSL || echo "false")
+SMTP_STARTTLS=$([[ ! -z $SMTP_STARTTLS ]] && echo $SMTP_STARTTLS || echo "false")
+SMTP_CHECK_CERT=$([[ ! -z $SMTP_CHECK_CERT ]] && echo $SMTP_CHECK_CERT || echo "false")
 
 # Download OpenOlat after check if exists
 download_openolat() {
@@ -84,7 +88,7 @@ get_configuration_information() {
 }
 
 # if OpenOlat was already installed
-if [[ -e "$INSTALL_DIR/install_information" ]] && [[ $(get_configuration_information "$INSTALL_DIR/install_information" "INSTALLED") == "true" ]]; then
+if [[ -e "$INSTALL_DIR/install_information" ]] && [[ "$(get_configuration_information "$INSTALL_DIR/install_information" "INSTALLED")" == "true" ]]; then
 	# check if OpenOlat has to be update
 	if [[ -z $OPENOLAT_UPDATE ]] && [[ $OPENOLAT_UPDATE == "true" ]]; then
 		echo "Perform update/downgrade OpenOlat to version $OPENOLAT_VERSION"
@@ -216,10 +220,14 @@ sed -i -s "s+_DB_NAME_+$DB_NAME+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DB_USER+$DB_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DB_PASS_+$DB_PASS+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_HOST_+$SMTP_HOST+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_PORT_+$SMTP_PORT+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_USER_+$SMTP_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_PASS_+$SMTP_PASS+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_FROM_+$SMTP_FROM+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_ADMIN_+$SMTP_ADMIN+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_SSL_+$SMTP_SSL+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_STARTTLS_+$SMTP_STARTTLS+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_SMTP_CHECK_CERT_+$SMTP_CHECK_CERT+g" "$INSTALL_DIR/lib/olat.local.properties"
 
 sed -i -s "s+_INSTALL_DIR_+$INSTALL_DIR+g" "$INSTALL_DIR/lib/log4j2.xml"
 
