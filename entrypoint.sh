@@ -217,7 +217,7 @@ sed -i -s "s+_INSTALL_DIR_+$INSTALL_DIR+g" "$INSTALL_DIR/lib/olat.local.properti
 sed -i -s "s+_DOMAINNAME_+$DOMAINNAME+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DB_TYPE_+$DB_TYPE+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DB_NAME_+$DB_NAME+g" "$INSTALL_DIR/lib/olat.local.properties"
-sed -i -s "s+_DB_USER+$DB_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
+sed -i -s "s+_DB_USER_+$DB_USER+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_DB_PASS_+$DB_PASS+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_HOST_+$SMTP_HOST+g" "$INSTALL_DIR/lib/olat.local.properties"
 sed -i -s "s+_SMTP_PORT_+$SMTP_PORT+g" "$INSTALL_DIR/lib/olat.local.properties"
