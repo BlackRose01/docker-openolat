@@ -27,6 +27,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN apt-get update
 RUN apt-get dist-upgrade -y
 RUN apt install -y default-jre default-jre-headless unzip curl wget
+RUN chmod 0777 /entrypoint.sh
 
 EXPOSE 8088/tcp
 
