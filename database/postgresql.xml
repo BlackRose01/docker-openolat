@@ -8,5 +8,5 @@
      validationQueryTimeout="-1" 
      testOnBorrow="true" 
      testOnReturn="false"
-     url="jdbc:postgresql://_DB_HOST_:DB_PORT_/_DB_NAME_"/>
+     url="jdbc:postgresql://_DB_HOST_:_DB_PORT_/_DB_NAME_"/>
 </Context>
