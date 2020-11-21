@@ -244,6 +244,11 @@ echo "CATALINA_BASE=$INSTALL_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "CATALINA_PID=$INSTALL_DIR/run/openolat.pid" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "CATALINA_TMPDIR=/tmp/openolat" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "JRE_HOME=$JAVA_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
+
+# Catalina options variable for performance issues
+CATALINA_OPTS="-Xmx1024m -Xms512m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=."
+echo "CATALINA_OPTS=\"$CATALINA_OPTS\"" >> "$INSTALL_DIR/bin/setenv.sh"
+
 echo "" >> "$INSTALL_DIR/bin/setenv.sh"
 echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
 
@@ -253,6 +258,7 @@ export JAVA_HOME=$JAVA_DIR
 export JRE_HOME=$JAVA_DIR
 export CATALINA_BASE=$INSTALL_DIR
 export CATALINA_HOME=$INSTALL_DIR/tomcat
+#export CATALINA_OPTS="$CATALINA_OPTS"
 
 # delete not necessary files
 echo "Clean up"
@@ -273,5 +279,4 @@ echo "USED_DOMAINNAME=$DOMAINNAME" >> "$INSTALL_DIR/install_information"
 # Start openolat
 echo "Start OpenOlat"
 /bin/sh /start run >> "$INSTALL_DIR/logs/stdout.log"
-
 exit 0
