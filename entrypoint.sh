@@ -64,7 +64,7 @@ download_tomcat() {
 		echo "Cannot find major release from Tomcat Version: $TOMCAT_VERSION_MAJOR. So your passed TOMCAT_VERSION $TOMCAT_VERSION is wrong."
 		return 1
 	elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/" | grep -Eoi "apache-tomcat-$TOMCAT_VERSION.tar.gz" | uniq | wc -l) == 0 ]]; then
-		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passes TOMCAT_VERSION is wrong."
+		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passed TOMCAT_VERSION is wrong."
 		echo "Verify downloadable link @ $TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"
 		return 1
 	else
