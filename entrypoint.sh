@@ -35,7 +35,8 @@ download_openolat() {
 
 	# check if version exists and download it into /tmp folder
 	if [[ $(curl -s "$OPENOLAT_URL" | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
-		echo "OpenOlat Version does not exists. Please change your required Version. Verify downloadable link @ $OPENOLAT_URL"
+		echo "OpenOlat Version does not exists. Please change your required version."
+                echo "Verify downloadable link @ $OPENOLAT_URL"
 		return 1
 	else
 		wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O "/tmp/openolat.war" --unlink -q
