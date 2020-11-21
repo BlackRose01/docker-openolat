@@ -35,7 +35,7 @@ download_openolat() {
 
 	# check if version exists and download it into /tmp folder
 	if [[ $(curl -s "$OPENOLAT_URL" | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
-		echo "OpenOlat Version does not exists. Please change your required Version."
+		echo "OpenOlat Version does not exists. Please change your required Version. Verify downloadable link @ $OPENOLAT_URL"
 		return 1
 	else
 		wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O "/tmp/openolat.war" --unlink -q
@@ -64,6 +64,7 @@ download_tomcat() {
 		return 1
 	elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/" | grep -Eoi "apache-tomcat-$TOMCAT_VERSION.tar.gz" | uniq | wc -l) == 0 ]]; then
 		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passes TOMCAT_VERSION is wrong."
+		echo "Verify downloadable link @ $TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"
 		return 1
 	else
 		wget "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" -O "/tmp/tomcat.tar.gz" --unlink -q
