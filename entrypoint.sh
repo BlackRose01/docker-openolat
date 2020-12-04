@@ -35,7 +35,8 @@ download_openolat() {
 
 	# check if version exists and download it into /tmp folder
 	if [[ $(curl -s "$OPENOLAT_URL" | grep -Eoi "openolat_[0-9]+.war" | uniq | grep "openolat_$OPENOLAT_VERSION" | wc -l) == 0 ]]; then
-		echo "OpenOlat Version does not exists. Please change your required Version."
+		echo "OpenOlat Version does not exists. Please change your required version."
+                echo "Verify downloadable link @ $OPENOLAT_URL"
 		return 1
 	else
 		wget "$OPENOLAT_URL/openolat_$OPENOLAT_VERSION.war" -O "/tmp/openolat.war" --unlink -q
@@ -63,7 +64,8 @@ download_tomcat() {
 		echo "Cannot find major release from Tomcat Version: $TOMCAT_VERSION_MAJOR. So your passed TOMCAT_VERSION $TOMCAT_VERSION is wrong."
 		return 1
 	elif [[ $(curl -s "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/" | grep -Eoi "apache-tomcat-$TOMCAT_VERSION.tar.gz" | uniq | wc -l) == 0 ]]; then
-		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passes TOMCAT_VERSION is wrong."
+		echo "Cannot find tomcat release with Tomcat Version: $TOMCAT_VERSION. So your passed TOMCAT_VERSION is wrong."
+		echo "Verify downloadable link @ $TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"
 		return 1
 	else
 		wget "$TOMCAT_URL/tomcat-$TOMCAT_VERSION_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" -O "/tmp/tomcat.tar.gz" --unlink -q
@@ -242,6 +244,11 @@ echo "CATALINA_BASE=$INSTALL_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "CATALINA_PID=$INSTALL_DIR/run/openolat.pid" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "CATALINA_TMPDIR=/tmp/openolat" >> "$INSTALL_DIR/bin/setenv.sh"
 echo "JRE_HOME=$JAVA_DIR" >> "$INSTALL_DIR/bin/setenv.sh"
+
+# Catalina options variable for performance issues
+CATALINA_OPTS="-Xmx1024m -Xms512m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=."
+echo "CATALINA_OPTS=\"$CATALINA_OPTS\"" >> "$INSTALL_DIR/bin/setenv.sh"
+
 echo "" >> "$INSTALL_DIR/bin/setenv.sh"
 echo 'mkdir -p $CATALINA_TMPDIR' >> "$INSTALL_DIR/bin/setenv.sh"
 
@@ -251,6 +258,7 @@ export JAVA_HOME=$JAVA_DIR
 export JRE_HOME=$JAVA_DIR
 export CATALINA_BASE=$INSTALL_DIR
 export CATALINA_HOME=$INSTALL_DIR/tomcat
+#export CATALINA_OPTS="$CATALINA_OPTS"
 
 # delete not necessary files
 echo "Clean up"
@@ -271,5 +279,4 @@ echo "USED_DOMAINNAME=$DOMAINNAME" >> "$INSTALL_DIR/install_information"
 # Start openolat
 echo "Start OpenOlat"
 /bin/sh /start run >> "$INSTALL_DIR/logs/stdout.log"
-
 exit 0
